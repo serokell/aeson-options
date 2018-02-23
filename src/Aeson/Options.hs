@@ -9,8 +9,6 @@ module Aeson.Options
        , defaultOptionsPS
        ) where
 
-import Universum
-
 import Data.Char (isLower, isPunctuation, isUpper, toLower)
 import Data.List (findIndex)
 
@@ -52,7 +50,7 @@ defaultOptions =
 -- | These options are the same as `defaultOptions`, but they don't
 -- modify constructor tags.
 leaveTagOptions :: A.Options
-leaveTagOptions = defaultOptions { A.constructorTagModifier = identity }
+leaveTagOptions = defaultOptions { A.constructorTagModifier = id }
 
 -- | Options used for communication with PureScript by default.
 defaultOptionsPS :: A.Options
