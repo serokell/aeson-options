@@ -1,0 +1,7 @@
+resolver: lts-10.6
+
+nix:
+    packages: [openssh,git]
+
+extra-deps:
+- universum-1.1.0
