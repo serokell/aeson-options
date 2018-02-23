@@ -3,7 +3,7 @@
 -- they don't fit one's needs, so treat them as just sensible
 -- defaults.
 
-module Aeson.Options
+module Data.Aeson.Options
        ( defaultOptions
        , leaveTagOptions
        , defaultOptionsPS

@@ -6,7 +6,7 @@ homepage:            https://github.com/serokell/aeson-options
 bug-reports:         https://github.com/serokell/aeson-options/issues
 license:             MIT
 license-file:        LICENSE
-category:            Data
+category:            Data, JSON
 author:              Serokell
 maintainer:          Serokell <hi@serokell.io>
 copyright:           2018 Serokell
@@ -23,7 +23,7 @@ source-repository head
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Aeson.Options
+  exposed-modules:     Data.Aeson.Options
 
   build-depends:       base >= 4.9 && < 5
                      , aeson >= 1.0 && < 1.4
