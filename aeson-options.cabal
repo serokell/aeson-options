@@ -1,5 +1,6 @@
+cabal-version:       2.0
 name:                aeson-options
-version:             0.0.0
+version:             0.1.0
 synopsis:            Options to derive FromJSON/ToJSON instances
 description:         Options to derive FromJSON/ToJSON instances.
 homepage:            https://github.com/serokell/aeson-options
@@ -14,8 +15,6 @@ build-type:          Simple
 
 extra-source-files:  CHANGELOG.md
                    , README.md
-cabal-version:       >=2.0
-
 
 source-repository head
   type:                git
@@ -25,7 +24,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Data.Aeson.Options
 
-  build-depends:       base >= 4.9 && < 5
+  build-depends:       base >= 4.10 && < 5
                      , aeson >= 1.0 && < 1.4
 
   ghc-options:         -Wall -fno-warn-orphans
