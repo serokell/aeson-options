@@ -7,6 +7,7 @@ The change log is available [on GitHub][2].
 0.1.0
 =====
 
+* Add options that strip type name from field prefixes.
 * Support build with GHC-8.6.1.
   Disable build with GHC-8.0.2 on CI.
 
