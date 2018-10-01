@@ -12,9 +12,11 @@ author:              Serokell
 maintainer:          Serokell <hi@serokell.io>
 copyright:           2018 Serokell
 build-type:          Simple
-
 extra-source-files:  CHANGELOG.md
                    , README.md
+tested-with:         GHC == 8.2.2
+                   , GHC == 8.4.3
+                   , GHC == 8.6.1
 
 source-repository head
   type:                git
