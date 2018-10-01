@@ -1,18 +1,32 @@
--- | Options used to derive FromJSON/ToJSON instance. These options
--- generally comply to our style regarding names. Of course sometimes
--- they don't fit one's needs, so treat them as just sensible
--- defaults.
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications    #-}
+
+{- | Options used to derive FromJSON/ToJSON instance. These options generally
+comply to our style regarding names. Of course sometimes they don't fit one's
+needs, so treat them as just sensible defaults.
+-}
 
 module Data.Aeson.Options
-       ( defaultOptions
+       ( -- * Custom options
+         defaultOptions
        , leaveTagOptions
        , defaultOptionsPS
+       , stripTypeOptions
+
+         -- * Generic functions
+       , genericParseJSONStripType
+       , genericToJSONStripType
        ) where
 
+import Data.Aeson.Types (Parser)
 import Data.Char (isLower, isPunctuation, isUpper, toLower)
-import Data.List (findIndex)
+import Data.List (findIndex, isPrefixOf)
+import GHC.Generics (Generic, Rep)
+import Type.Reflection (Typeable, typeRep)
 
-import qualified Data.Aeson.TH as A
+import qualified Data.Aeson as A
 
 headToLower :: String -> String
 headToLower []     = error "Can not use headToLower on empty String"
@@ -58,3 +72,52 @@ defaultOptionsPS =
     A.defaultOptions
     { A.constructorTagModifier = headToLower . stripConstructorPrefix
     }
+
+{- | Allows to create 'A.FromJSON' instance that strips the data type name prefix
+from every field. Doesn't change name of the fields that doesn't start with the
+type name.
+
+>>> data Foo = Foo { fooBar :: String, fooQuux :: Int } deriving (Generic, Show)
+>>> instance FromJSON Foo where parseJSON = genericParseJSONStripType
+>>> decode @Foo "{ \"bar\": \"test\", \"quux\": 42 }"
+Just (Foo {fooBar = "test", fooQuux = 42})
+-}
+genericParseJSONStripType
+    :: forall a .
+       (Typeable a, Generic a, A.GFromJSON A.Zero (Rep a))
+    => A.Value
+    -> Parser a
+genericParseJSONStripType = A.genericParseJSON (stripTypeOptions @a)
+
+{- | Allows to create 'A.ToJSON' instance that strips the data type name prefix
+from every field. Doesn't change name of the fields that doesn't start with the
+type name.
+
+>>> data Foo = Foo { fooBar :: String, fooQuux :: Int } deriving (Generic, Show)
+>>> instance ToJSON Foo where toJSON = genericToJSONStripType
+>>> encode $ Foo { fooBar = "test", fooQuux = 42 }
+"{\"quux\":42,\"bar\":\"test\"}"
+-}
+genericToJSONStripType
+    :: forall a .
+       (Typeable a, Generic a, A.GToJSON A.Zero (Rep a))
+    => a
+    -> A.Value
+genericToJSONStripType = A.genericToJSON (stripTypeOptions @a)
+
+{- | Options to strip type name from the field names. See
+'genericParseJSONStripType' and 'genericToJSONStripType' for examples.
+-}
+stripTypeOptions :: forall a . Typeable a => A.Options
+stripTypeOptions = A.defaultOptions
+    { A.fieldLabelModifier = stripTypeNamePrefix
+    }
+  where
+    typeName :: String
+    typeName = headToLower $ show $ typeRep @a
+
+    stripTypeNamePrefix :: String -> String
+    stripTypeNamePrefix fieldName =
+        if typeName `isPrefixOf` fieldName
+            then headToLower $ drop (length typeName) fieldName
+            else fieldName
